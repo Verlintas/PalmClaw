@@ -18,8 +18,8 @@ class WorkspacePathResolverTest {
 
     @Before
     fun setUp() {
-        sharedRoot = Files.createTempDirectory("workspace-path-resolver-shared").toFile()
-        externalRoot = Files.createTempDirectory("workspace-path-resolver-external").toFile()
+        sharedRoot = Files.createTempDirectory("workspace-path-resolver-shared").toFile().canonicalFile
+        externalRoot = Files.createTempDirectory("workspace-path-resolver-external").toFile().canonicalFile
         manager = SessionWorkspaceManager(sharedRoot)
         manager.ensureWorkspace(currentSessionId, "Current")
         manager.ensureWorkspace(otherSessionId, "Other")

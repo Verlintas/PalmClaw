@@ -212,7 +212,7 @@ class FileToolsTest {
 
     @Test
     fun `delete rejects the configured external storage root`() = runBlocking {
-        val externalRoot = createTempDirectory("palmclaw-external-root-").toFile()
+        val externalRoot = createTempDirectory("palmclaw-external-root-").toFile().canonicalFile
         val fixture = createFixture(sharedExternalRoot = externalRoot)
         val tool = fixture.tools.first { it.name == "delete" }
 
@@ -227,7 +227,7 @@ class FileToolsTest {
 
     @Test
     fun `delete requires confirmation before modifying external storage`() = runBlocking {
-        val externalRoot = createTempDirectory("palmclaw-external-root-").toFile()
+        val externalRoot = createTempDirectory("palmclaw-external-root-").toFile().canonicalFile
         val externalFile = File(externalRoot, "keep.txt").apply { writeText("keep") }
         val fixture = createFixture(
             sharedExternalRoot = externalRoot,
@@ -244,7 +244,7 @@ class FileToolsTest {
 
     @Test
     fun `write does not overwrite an external file that appears during confirmation`() = runBlocking {
-        val externalRoot = createTempDirectory("palmclaw-external-root-").toFile()
+        val externalRoot = createTempDirectory("palmclaw-external-root-").toFile().canonicalFile
         val target = File(externalRoot, "appeared.txt")
         val fixture = createFixture(
             sharedExternalRoot = externalRoot,
@@ -403,14 +403,14 @@ class FileToolsTest {
         fileCopier: (File, File) -> Unit = { source, destination -> source.copyTo(destination) },
         fileDeleter: ((File) -> Unit)? = null
     ): Fixture {
-        val sharedRoot = createTempDirectory("palmclaw-file-tools-").toFile()
+        val sharedRoot = createTempDirectory("palmclaw-file-tools-").toFile().canonicalFile
         val sessionId = "session:file-tools"
         val manager = SessionWorkspaceManager(sharedRoot)
         val snapshot = manager.ensureWorkspace(sessionId, "File Tools")
         val resolver = WorkspacePathResolver(
             currentSessionIdProvider = { sessionId },
             workspaceManager = manager,
-            sharedExternalRoot = sharedExternalRoot
+            sharedExternalRoot = sharedExternalRoot?.canonicalFile
         )
         return Fixture(
             workspaceRoot = File(snapshot.workspaceRoot),
